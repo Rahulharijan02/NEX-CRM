@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | NexCell CRM{% endblock %}
+
+{% block content %}
+<h1>Dashboard</h1>
+
+<p class="hint">
+    Welcome, {{ user.get_full_name|default:user.username }} (role: {{ user.role }}).
+</p>
+
+<div class="cards">
+    {% if show_sales %}
+        <div class="card">
+            <h3>Sales CRM</h3>
+            <p>Contacts: <strong>{{ counts.contacts }}</strong></p>
+            <p>Deals: <strong>{{ counts.deals }}</strong></p>
+            <p>
+                <a href="{% url 'crm:contacts' %}">Go to Contacts</a> |
+                <a href="{% url 'crm:deals' %}">Go to Deals</a>
+            </p>
+        </div>
+    {% endif %}
+
+    {% if show_clinic %}
+        <div class="card">
+            <h3>Clinic</h3>
+            <p>Patients: <strong>{{ counts.patients }}</strong></p>
+            <p>Appointments: <strong>{{ counts.appointments }}</strong></p>
+            <p>
+                <a href="{% url 'clinic:patients' %}">Go to Patients</a> |
+                <a href="{% url 'clinic:appointments' %}">Go to Appointments</a>
+            </p>
+        </div>
+    {% endif %}
+
+    {% if show_realestate %}
+        <div class="card">
+            <h3>Real Estate</h3>
+            <p>Properties: <strong>{{ counts.properties }}</strong></p>
+            <p>Viewings: <strong>{{ counts.viewings }}</strong></p>
+            <p>
+                <a href="{% url 'realestate:properties' %}">Go to Properties</a> |
+                <a href="{% url 'realestate:viewings' %}">Go to Viewings</a>
+            </p>
+        </div>
+    {% endif %}
+
+    <div class="card">
+        <h3>API</h3>
+        <p>
+            <a href="/api/docs/">Swagger UI</a> |
+            <a href="/api/schema/">OpenAPI Schema</a>
+        </p>
+        <p class="hint">Use JWT tokens from <code>/api/auth/</code> in Swagger's Authorize button.</p>
+    </div>
+</div>
+
+{% endblock %}

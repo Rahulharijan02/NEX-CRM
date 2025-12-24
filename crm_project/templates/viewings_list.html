@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Viewings | NexCell CRM{% endblock %}
+
+{% block content %}
+<h1>Viewings</h1>
+
+{% if user.role == 'admin' or user.role == 'manager' or user.role == 'agent' %}
+<form method="post"
+      action="{% url 'realestate:viewing_create' %}"
+      hx-post="{% url 'realestate:viewing_create' %}"
+      hx-target="#viewings-table-body"
+      hx-swap="afterbegin">
+    {% csrf_token %}
+    <select name="property" required>
+        <option value="" disabled selected>Select property</option>
+        {% for p in properties %}
+            <option value="{{ p.id }}">{{ p.name }}</option>
+        {% endfor %}
+    </select>
+    <select name="contact" required>
+        <option value="" disabled selected>Select contact</option>
+        {% for c in contacts %}
+            <option value="{{ c.id }}">{{ c.first_name }} {{ c.last_name }}</option>
+        {% endfor %}
+    </select>
+    <input type="datetime-local" name="scheduled_at" required>
+    <input type="text" name="notes" placeholder="Notes">
+    <button type="submit">Add Viewing</button>
+</form>
+{% else %}
+<p class="hint">You have read-only access with your role.</p>
+{% endif %}
+
+{% if properties|length == 0 or contacts|length == 0 %}
+    <p class="hint">You need at least one property and one contact to create a viewing.</p>
+{% endif %}
+
+<table class="table">
+    <thead>
+        <tr><th>ID</th><th>Property</th><th>Contact</th><th>When</th><th>Notes</th></tr>
+    </thead>
+    <tbody id="viewings-table-body">
+        {% for viewing in viewings %}
+            {% include "partials/viewing_row.html" with viewing=viewing %}
+        {% empty %}
+            <tr><td colspan="5">No viewings found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

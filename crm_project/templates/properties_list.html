@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Properties | NexCell CRM{% endblock %}
+
+{% block content %}
+<h1>Properties</h1>
+
+{% if user.role == 'admin' or user.role == 'manager' or user.role == 'agent' %}
+<form method="post"
+      action="{% url 'realestate:property_create' %}"
+      hx-post="{% url 'realestate:property_create' %}"
+      hx-target="#properties-table-body"
+      hx-swap="afterbegin">
+    {% csrf_token %}
+    <input type="text" name="name" placeholder="Name" required>
+    <input type="text" name="address" placeholder="Address" required>
+    <input type="text" name="city" placeholder="City">
+    <select name="status">
+        <option value="listed">Listed</option>
+        <option value="sold">Sold</option>
+        <option value="let">Let</option>
+    </select>
+    <input type="number" step="0.01" name="price" placeholder="Price">
+    <input type="text" name="description" placeholder="Description">
+    <button type="submit">Add Property</button>
+</form>
+{% else %}
+<p class="hint">You have read-only access with your role.</p>
+{% endif %}
+
+<table class="table">
+    <thead>
+        <tr><th>ID</th><th>Name</th><th>Address</th><th>City</th><th>Status</th><th>Price</th></tr>
+    </thead>
+    <tbody id="properties-table-body">
+        {% for property in properties %}
+            {% include "partials/property_row.html" with property=property %}
+        {% empty %}
+            <tr><td colspan="6">No properties found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

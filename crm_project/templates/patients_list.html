@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Patients | NexCell CRM{% endblock %}
+
+{% block content %}
+<h1>Patients</h1>
+{% if user.role == 'admin' or user.role == 'manager' or user.role == 'practitioner' %}
+<form method="post"
+      action="{% url 'clinic:patient_create' %}"
+      hx-post="{% url 'clinic:patient_create' %}"
+      hx-target="#patients-table-body"
+      hx-swap="afterbegin">
+    {% csrf_token %}
+    <input type="text" name="first_name" placeholder="First name" required>
+    <input type="text" name="last_name" placeholder="Last name" required>
+    <input type="email" name="email" placeholder="Email">
+    <input type="text" name="phone" placeholder="Phone">
+    <input type="date" name="date_of_birth">
+    <button type="submit">Add Patient</button>
+</form>
+{% else %}
+<p class="hint">You have read-only access with your role.</p>
+{% endif %}
+
+<table class="table">
+    <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>DOB</th></tr></thead>
+    <tbody id="patients-table-body">
+        {% for patient in patients %}
+            {% include "partials/patient_row.html" with patient=patient %}
+        {% empty %}
+            <tr><td colspan="5">No patients found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

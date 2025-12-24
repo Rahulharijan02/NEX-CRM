@@ -1,0 +1,8 @@
+<tr>
+    <td>{{ property.id }}</td>
+    <td>{{ property.name }}</td>
+    <td>{{ property.address }}</td>
+    <td>{{ property.city|default:"-" }}</td>
+    <td>{{ property.get_status_display }}</td>
+    <td>{{ property.price|default:"-" }}</td>
+</tr>

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Register | NexCell CRM{% endblock %}
+
+{% block content %}
+<h1>Create your account</h1>
+
+<p>This simple form creates a new organisation (tenant) and makes you
+the admin of it. After registering you will be redirected straight to
+the Contacts page.</p>
+
+{% if errors %}
+    <ul class="errors">
+        {% for error in errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <div>
+        <label for="id_username">Username</label>
+        <input type="text" id="id_username" name="username" required>
+    </div>
+    <div>
+        <label for="id_email">Email (optional)</label>
+        <input type="email" id="id_email" name="email">
+    </div>
+    <div>
+        <label for="id_password">Password</label>
+        <input type="password" id="id_password" name="password" required>
+    </div>
+    <div>
+        <label for="id_password2">Confirm password</label>
+        <input type="password" id="id_password2" name="password2" required>
+    </div>
+    <button type="submit">Register</button>
+</form>
+
+<p>Already have an account? <a href="{% url 'login' %}">Log in</a>.</p>
+{% endblock %}

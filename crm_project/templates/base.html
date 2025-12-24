@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NexCell CRM{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- HTMX is optional: forms will still work via normal POST if HTMX fails to load -->
+    <script src="https://unpkg.com/htmx.org@1.9.2/dist/htmx.min.js" defer></script>
+    <script src="{% static 'js/main.js' %}" defer></script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        {% if user.is_authenticated %}
+            {% if user.role == 'admin' or user.role == 'manager' or user.role == 'agent' %}
+                | <a href="{% url 'crm:contacts' %}">Contacts</a>
+                | <a href="{% url 'crm:deals' %}">Deals</a>
+                | <a href="{% url 'realestate:properties' %}">Properties</a>
+                | <a href="{% url 'realestate:viewings' %}">Viewings</a>
+            {% endif %}
+            {% if user.role == 'admin' or user.role == 'manager' or user.role == 'practitioner' %}
+                | <a href="{% url 'clinic:patients' %}">Patients</a>
+                | <a href="{% url 'clinic:appointments' %}">Appointments</a>
+            {% endif %}
+            | <a href="/api/docs/">API Docs</a>
+        {% else %}
+            | <a href="/api/docs/">API Docs</a>
+        {% endif %}
+        <span class="nav-right">
+            {% if user.is_authenticated %}
+                Logged in as {{ user.username }} |
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a> |
+                <a href="{% url 'register' %}">Register</a>
+            {% endif %}
+        </span>
+    </nav>
+    <main class="container">
+        {% if messages %}
+            <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Deals | NexCell CRM{% endblock %}
+
+{% block content %}
+<h1>Deals</h1>
+{% if user.role == 'admin' or user.role == 'manager' or user.role == 'agent' %}
+<form id="deal-form"
+      method="post"
+      action="{% url 'crm:deal_create' %}"
+      hx-post="{% url 'crm:deal_create' %}"
+      hx-target="#deals-table-body"
+      hx-swap="afterbegin">
+    {% csrf_token %}
+    <input type="text" name="name" placeholder="Deal name" required>
+    <select name="contact" required>
+        <option value="" disabled selected>Select contact</option>
+        {% for contact in contacts %}
+            <option value="{{ contact.id }}">{{ contact.first_name }} {{ contact.last_name }}</option>
+        {% endfor %}
+    </select>
+    <input type="number" step="0.01" name="amount" placeholder="Amount">
+    <select name="stage">
+        <option value="new">New</option>
+        <option value="in_progress">In Progress</option>
+        <option value="won">Won</option>
+        <option value="lost">Lost</option>
+    </select>
+    <input type="date" name="close_date">
+    <input type="text" name="description" placeholder="Description">
+    <button type="submit">Add Deal</button>
+</form>
+{% else %}
+<p class="hint">You have read-only access with your role.</p>
+{% endif %}
+
+{% if contacts|length == 0 %}
+    <p class="hint">You must create at least one contact before creating a deal.</p>
+{% endif %}
+
+<table class="table">
+    <thead>
+        <tr><th>ID</th><th>Name</th><th>Contact</th><th>Amount</th><th>Stage</th><th>Close date</th></tr>
+    </thead>
+    <tbody id="deals-table-body">
+        {% for deal in deals %}
+            {% include "partials/deal_row.html" with deal=deal %}
+        {% empty %}
+            <tr><td colspan="6">No deals found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

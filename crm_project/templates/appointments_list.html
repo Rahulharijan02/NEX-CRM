@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Appointments | NexCell CRM{% endblock %}
+
+{% block content %}
+<h1>Appointments</h1>
+{% if user.role == 'admin' or user.role == 'manager' or user.role == 'practitioner' %}
+<form method="post"
+      action="{% url 'clinic:appointment_create' %}"
+      hx-post="{% url 'clinic:appointment_create' %}"
+      hx-target="#appointments-table-body"
+      hx-swap="afterbegin">
+    {% csrf_token %}
+    <select name="patient" required>
+        <option value="" disabled selected>Select patient</option>
+        {% for patient in patients %}
+            <option value="{{ patient.id }}">{{ patient.first_name }} {{ patient.last_name }}</option>
+        {% endfor %}
+    </select>
+    <select name="practitioner">
+        <option value="" selected>No practitioner</option>
+        {% for pract in practitioners %}
+            <option value="{{ pract.id }}">{{ pract.get_full_name }}</option>
+        {% endfor %}
+    </select>
+    <input type="datetime-local" name="scheduled_at" required>
+    <input type="text" name="reason" placeholder="Reason">
+    <select name="status">
+        <option value="scheduled">Scheduled</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+    </select>
+    <button type="submit">Add Appointment</button>
+</form>
+{% else %}
+<p class="hint">You have read-only access with your role.</p>
+{% endif %}
+
+{% if patients|length == 0 %}
+    <p class="hint">You must create at least one patient before creating an appointment.</p>
+{% endif %}
+
+<table class="table">
+    <thead><tr><th>ID</th><th>Patient</th><th>Practitioner</th><th>When</th><th>Status</th><th>Reason</th></tr></thead>
+    <tbody id="appointments-table-body">
+        {% for appointment in appointments %}
+            {% include "partials/appointment_row.html" with appointment=appointment %}
+        {% empty %}
+            <tr><td colspan="6">No appointments found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
